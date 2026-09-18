@@ -1,0 +1,20 @@
+# -----------------------------------------------------------------------------
+# Yosys: SystemVerilog RTL -> generic gate-level netlist
+# Run with: yosys -s synth/synth.ys   (or: make synth)
+# -----------------------------------------------------------------------------
+
+read_verilog -sv rtl/sync_fifo.sv
+
+hierarchy -check -top sync_fifo    ; # resolve parameters, check port connections
+
+proc                               ; # always_ff/always_comb -> registers + muxes
+opt
+memory                             ; # infer the storage array as a memory
+opt
+techmap                            ; # coarse cells -> AND/OR/NOT/DFF
+opt -fast
+
+check -assert                      ; # fail on obvious structural problems
+
+tee -o build/synth_stat.txt stat
+write_verilog -noattr build/fifo_netlist.v
