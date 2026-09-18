@@ -15,6 +15,7 @@
 //
 // DEPTH must be a power of two for this trick to work.
 // -----------------------------------------------------------------------------
+`timescale 1ns/1ps
 `default_nettype none
 
 module sync_fifo #(

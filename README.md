@@ -71,6 +71,25 @@ That costs one cycle of read latency, which the consumer has to account for.
 Block RAM is far denser than distributed RAM, so past a few hundred bits of
 storage it is the right call. Worth knowing that this is a choice, and why.
 
+## Synthesis result
+
+`make synth` at the default `WIDTH=8, DEPTH=16` gives:
+
+```
+Number of cells:   383
+  $_DFFE_PP_       128      <- the 16 x 8 storage array
+  $_SDFFE_PP0P_     10      <- the two 5-bit pointers
+  $_SDFF_PP0_        4
+  $_MUX_           136      <- read mux + write address decode
+  ...
+Number of memories:  0
+```
+
+Note `memories: 0` and 128 flip-flops: because the read is combinational, the
+storage array became **registers, not a RAM**. That is the distributed-vs-block
+RAM trade-off described above, visible as a number. Switch to the registered-read
+variant and this is what changes.
+
 ## Verification
 
 `make sim` runs the testbench, which prints `TEST PASSED` or `TEST FAILED` and

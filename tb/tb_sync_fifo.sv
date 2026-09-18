@@ -201,7 +201,12 @@ module tb_sync_fifo;
                 end
             end
 
-            @(negedge clk);                      // the posedge commits both
+            // Advance over exactly ONE posedge, then update the model to match.
+            // (Waiting for the next negedge instead would let a second posedge
+            // slip past with wr_en/rd_en still asserted, and the DUT would do
+            // two operations for every one modelled here.)
+            @(posedge clk);
+            #1;
             if (will_wr) model_push(r[31:24]);
             if (will_rd) model_pop();
         end
